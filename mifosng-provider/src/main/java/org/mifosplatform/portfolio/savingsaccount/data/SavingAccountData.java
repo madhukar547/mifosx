@@ -268,6 +268,174 @@ public class SavingAccountData {
         this.savingsInterestTypeOptions = null;
         this.lockinPeriodTypeOptions = null;
         this.interestCalculationOptions = null;
-
     }
+
+	public Long getId() {
+		return this.id;
+	}
+
+	public EnumOptionData getStatus() {
+		return this.status;
+	}
+
+	public String getExternalId() {
+		return this.externalId;
+	}
+
+	public Long getClientId() {
+		return this.clientId;
+	}
+
+	public String getClientName() {
+		return this.clientName;
+	}
+
+	public Long getProductId() {
+		return this.productId;
+	}
+
+	public String getProductName() {
+		return this.productName;
+	}
+
+	public EnumOptionData getProductType() {
+		return this.productType;
+	}
+
+	public CurrencyData getCurrencyData() {
+		return this.currencyData;
+	}
+
+	public BigDecimal getSavingsDepostiAmountPerPeriod() {
+		return this.savingsDepositAmountPerPeriod;
+	}
+
+	public EnumOptionData getSavingsFrequencyType() {
+		return this.savingsFrequencyType;
+	}
+
+	public BigDecimal getTotalDepositAmount() {
+		return this.totalDepositAmount;
+	}
+
+	public BigDecimal getReccuringInterestRate() {
+		return this.recurringInterestRate;
+	}
+
+	public BigDecimal getSavingInterestRate() {
+		return this.savingInterestRate;
+	}
+
+	public EnumOptionData getInterestType() {
+		return this.interestType;
+	}
+
+	public EnumOptionData getInterestCalculationMethod() {
+		return this.interestCalculationMethod;
+	}
+
+	public Integer getTenure() {
+		return this.tenure;
+	}
+
+	public EnumOptionData getTenureType() {
+		return this.tenureType;
+	}
+
+	public LocalDate getProjectedCommencementDate() {
+		return this.projectedCommencementDate;
+	}
+
+	public LocalDate getActualCommencementDate() {
+		return this.actualCommencementDate;
+	}
+
+	public LocalDate getMaturesOnDate() {
+		return this.maturesOnDate;
+	}
+
+	public BigDecimal getProjectedInterestAccuredOnMaturity() {
+		return this.projectedInterestAccuredOnMaturity;
+	}
+
+	public BigDecimal getActualInterestAccured() {
+		return this.actualInterestAccured;
+	}
+
+	public BigDecimal getProjectedMaturityAmount() {
+		return this.projectedMaturityAmount;
+	}
+
+	public BigDecimal getActualMaturityAmount() {
+		return this.actualMaturityAmount;
+	}
+
+	public boolean isPreClosureAllowed() {
+		return this.preClosureAllowed;
+	}
+
+	public BigDecimal getPreClosureInterestRate() {
+		return this.preClosureInterestRate;
+	}
+
+	public LocalDate getWithdrawnonDate() {
+		return this.withdrawnonDate;
+	}
+
+	public LocalDate getRejectedonDate() {
+		return this.rejectedonDate;
+	}
+
+	public LocalDate getClosedonDate() {
+		return this.closedonDate;
+	}
+
+	public boolean isLockinPeriodAllowed() {
+		return this.isLockinPeriodAllowed;
+	}
+
+	public Integer getLockinPeriod() {
+		return this.lockinPeriod;
+	}
+
+	public EnumOptionData getLockinPeriodType() {
+		return this.lockinPeriodType;
+	}
+
+	public Integer getDepositEvery() {
+		return this.depositEvery;
+	}
+
+	public List<SavingProductLookup> getProductOptions() {
+		return this.productOptions;
+	}
+
+	public List<CurrencyData> getCurrencyOptions() {
+		return this.currencyOptions;
+	}
+
+	public List<EnumOptionData> getSavingsProductTypeOptions() {
+		return this.savingsProductTypeOptions;
+	}
+
+	public List<EnumOptionData> getTenureTypeOptions() {
+		return this.tenureTypeOptions;
+	}
+
+	public List<EnumOptionData> getSavingFrequencyOptions() {
+		return this.savingFrequencyOptions;
+	}
+
+	public List<EnumOptionData> getSavingsInterestTypeOptions() {
+		return this.savingsInterestTypeOptions;
+	}
+
+	public List<EnumOptionData> getLockinPeriodTypeOptions() {
+		return this.lockinPeriodTypeOptions;
+	}
+
+	public List<EnumOptionData> getInterestCalculationOptions() {
+		return this.interestCalculationOptions;
+	}
+	
 }
