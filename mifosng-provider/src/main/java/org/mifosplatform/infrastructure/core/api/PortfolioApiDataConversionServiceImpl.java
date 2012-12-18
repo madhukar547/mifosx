@@ -31,7 +31,9 @@ import org.mifosplatform.portfolio.loanaccount.command.AdjustLoanTransactionComm
 import org.mifosplatform.portfolio.loanaccount.command.LoanChargeCommand;
 import org.mifosplatform.portfolio.loanaccount.command.LoanTransactionCommand;
 import org.mifosplatform.portfolio.loanaccount.gaurantor.command.GuarantorCommand;
+import org.mifosplatform.portfolio.savingsaccount.command.SavingAccountApprovalCommand;
 import org.mifosplatform.portfolio.savingsaccount.command.SavingAccountCommand;
+import org.mifosplatform.portfolio.savingsaccount.command.SavingStateTransitionsCommand;
 import org.mifosplatform.portfolio.savingsaccountproduct.command.SavingProductCommand;
 import org.mifosplatform.portfolio.savingsdepositaccount.command.DepositAccountCommand;
 import org.mifosplatform.portfolio.savingsdepositaccount.command.DepositAccountWithdrawInterestCommand;
@@ -1046,4 +1048,55 @@ public class PortfolioApiDataConversionServiceImpl implements PortfolioApiDataCo
         command.setLocale(locale);
         return command;
     }
+
+	@Override
+	public SavingStateTransitionsCommand convertJsonToSavingStateTransitionCommand( Long accountId, String json) {
+		
+       if (StringUtils.isBlank(json)) { throw new InvalidJsonException(); }
+
+        Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        Map<String, Object> requestMap = gsonConverter.fromJson(json, typeOfMap);
+
+        Set<String> supportedParams = new HashSet<String>(Arrays.asList("eventDate", "locale", "dateFormat", "note"));
+
+        checkForUnsupportedParameters(requestMap, supportedParams);
+
+        Set<String> modifiedParameters = new HashSet<String>();
+
+        LocalDate eventDate = extractLocalDateParameter("eventDate", requestMap, modifiedParameters);
+        String note = extractStringParameter("note", requestMap, modifiedParameters);
+
+        return new SavingStateTransitionsCommand(accountId, eventDate, note);
+		
+	}
+
+	@Override
+	public SavingAccountApprovalCommand convertJsonToSavingApprovalCommand( Long accountId, String json) {
+		
+		if (StringUtils.isBlank(json)) { throw new InvalidJsonException(); }
+		
+		Type typeOfMap = new TypeToken<Map<String, Object>>() {}.getType();
+        Map<String, Object> requestMap = gsonConverter.fromJson(json, typeOfMap);
+        
+        Set<String> supportedParams = new HashSet<String>(Arrays.asList("locale", "dateFormat", "productId", "commencementDate", "savingsDepositAmountPerPeriod",
+        		"minimumBalanceForWithdrawal", "recurringInterestRate", "savingInterestRate", "interestType", "tenure", "tenureType", "frequency", "payEvery", "note"));
+        
+        checkForUnsupportedParameters(requestMap, supportedParams);
+        Set<String> modifiedParameters = new HashSet<String>();
+        
+        Long productId = extractLongParameter("productId", requestMap, modifiedParameters);
+        LocalDate commencementDate = extractLocalDateParameter("commencementDate", requestMap, modifiedParameters);
+        BigDecimal savingsDepositAmountPerPeriod = extractBigDecimalParameter("savingsDepositAmountPerPeriod", requestMap, modifiedParameters);
+        BigDecimal minimumBalanceForWithdrawal = extractBigDecimalParameter("minimumBalanceForWithdrawal", requestMap, modifiedParameters);
+        BigDecimal recurringInterestRate = extractBigDecimalParameter("recurringInterestRate", requestMap, modifiedParameters);
+        BigDecimal savingInterestRate = extractBigDecimalParameter("savingInterestRate", requestMap, modifiedParameters);
+        Integer interestType = extractIntegerParameter("interestType", requestMap, modifiedParameters);
+        Integer tenure = extractIntegerParameter("tenure", requestMap, modifiedParameters);
+        Integer tenureType = extractIntegerParameter("tenureType", requestMap, modifiedParameters);
+        Integer frequency = extractIntegerParameter("frequency", requestMap, modifiedParameters);
+        Integer payEvery = extractIntegerParameter("payEvery", requestMap, modifiedParameters);
+        String note = extractStringParameter("note", requestMap, modifiedParameters);
+		return new SavingAccountApprovalCommand(accountId, productId, commencementDate, savingsDepositAmountPerPeriod, minimumBalanceForWithdrawal, recurringInterestRate,
+				savingInterestRate, interestType, tenure, tenureType, frequency, payEvery, note);
+	}
 }

@@ -8,7 +8,9 @@ import org.mifosplatform.portfolio.loanaccount.command.AdjustLoanTransactionComm
 import org.mifosplatform.portfolio.loanaccount.command.LoanChargeCommand;
 import org.mifosplatform.portfolio.loanaccount.command.LoanTransactionCommand;
 import org.mifosplatform.portfolio.loanaccount.gaurantor.command.GuarantorCommand;
+import org.mifosplatform.portfolio.savingsaccount.command.SavingAccountApprovalCommand;
 import org.mifosplatform.portfolio.savingsaccount.command.SavingAccountCommand;
+import org.mifosplatform.portfolio.savingsaccount.command.SavingStateTransitionsCommand;
 import org.mifosplatform.portfolio.savingsaccountproduct.command.SavingProductCommand;
 import org.mifosplatform.portfolio.savingsdepositaccount.command.DepositAccountCommand;
 import org.mifosplatform.portfolio.savingsdepositaccount.command.DepositAccountWithdrawInterestCommand;
@@ -52,4 +54,8 @@ public interface PortfolioApiDataConversionService {
     SavingAccountCommand convertJsonToSavingAccountCommand(Long resourceIdentifier, String json);
 
     GuarantorCommand convertJsonToGuarantorCommand(Long resourceIdentifier, Long loanId, String json);
+    
+    SavingStateTransitionsCommand convertJsonToSavingStateTransitionCommand(Long accountId, String json);
+    
+    SavingAccountApprovalCommand convertJsonToSavingApprovalCommand(Long accountId, String json);
 }

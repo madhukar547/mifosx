@@ -25,12 +25,16 @@ import org.mifosplatform.infrastructure.core.api.PortfolioApiDataConversionServi
 import org.mifosplatform.infrastructure.core.api.PortfolioApiJsonSerializerService;
 import org.mifosplatform.infrastructure.core.data.EntityIdentifier;
 import org.mifosplatform.infrastructure.core.data.EnumOptionData;
+import org.mifosplatform.infrastructure.core.exception.UnrecognizedQueryParamException;
 import org.mifosplatform.infrastructure.core.serialization.ToApiJsonSerializer;
 import org.mifosplatform.infrastructure.security.service.PlatformSecurityContext;
 import org.mifosplatform.organisation.monetary.data.CurrencyData;
 import org.mifosplatform.organisation.monetary.service.CurrencyReadPlatformService;
+import org.mifosplatform.portfolio.loanaccount.command.UndoStateTransitionCommand;
 import org.mifosplatform.portfolio.savingsaccount.command.CalculateSavingScheduleCommand;
+import org.mifosplatform.portfolio.savingsaccount.command.SavingAccountApprovalCommand;
 import org.mifosplatform.portfolio.savingsaccount.command.SavingAccountCommand;
+import org.mifosplatform.portfolio.savingsaccount.command.SavingStateTransitionsCommand;
 import org.mifosplatform.portfolio.savingsaccount.data.SavingAccountData;
 import org.mifosplatform.portfolio.savingsaccount.data.SavingScheduleData;
 import org.mifosplatform.portfolio.savingsaccount.service.CalculateSavingSchedule;
@@ -231,5 +235,35 @@ public class SavingsAccountApiResource {
 	private boolean is(final String commandParam, final String commandValue) {
         return StringUtils.isNotBlank(commandParam) && commandParam.trim().equalsIgnoreCase(commandValue);
     }
+	
+	@POST
+	@Path("{accountId}")
+	@Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+	 public Response savingStateTransitions(@PathParam("accountId") final Long accountId, @QueryParam("command") final String commandParam, final String jsonRequestBody) {
+		Response response = null;
+		if (is(commandParam, "approve")) {
+			SavingAccountApprovalCommand command = this.apiDataConversionService.convertJsonToSavingApprovalCommand(accountId, jsonRequestBody);
+			EntityIdentifier identifier = this.savingAccountWritePlatformService.approveSavingAccount(command);
+			response = Response.ok().entity(identifier).build();
+		} else {
+			SavingStateTransitionsCommand command = this.apiDataConversionService.convertJsonToSavingStateTransitionCommand(accountId, jsonRequestBody);
+			if (is(commandParam, "reject")) {
+				EntityIdentifier identifier = this.savingAccountWritePlatformService.rejectSavingApplication(command);
+				response = Response.ok().entity(identifier).build();
+			} else if (is(commandParam, "withdrewbyclient")) {
+				EntityIdentifier identifier = this.savingAccountWritePlatformService.withdrawSavingApplication(command);
+				response = Response.ok().entity(identifier).build();
+			}
+			UndoStateTransitionCommand undoCommand = new UndoStateTransitionCommand(accountId, command.getNote());
+			if (is(commandParam, "undoapproval")) {
+				EntityIdentifier identifier = this.savingAccountWritePlatformService.undoSavingAccountApproval(undoCommand);
+				response = Response.ok().entity(identifier).build();
+			}
+		}
+		if (response == null) { throw new UnrecognizedQueryParamException("command", commandParam); }
+		return response; 
+	}
+		
 
 }

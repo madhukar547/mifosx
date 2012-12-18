@@ -48,6 +48,12 @@ public class SavingScheduleInstallments extends AbstractAuditableCustom<AppUser,
     @SuppressWarnings("unused")
     @Column(name = "completed_derived", nullable = false)
     private boolean completed;
+    
+    public SavingScheduleInstallments() {
+		this.dueDate = null;
+		this.installmentNumber = null;
+		this.paymentDate = null;
+	}
 
     public SavingScheduleInstallments(SavingAccount account, Date dueDate, Integer installmentNumber, BigDecimal deposit) {
         this.savingAccount = account;

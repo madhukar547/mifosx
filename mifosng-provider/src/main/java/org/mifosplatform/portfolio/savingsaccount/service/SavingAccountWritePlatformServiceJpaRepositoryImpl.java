@@ -1,14 +1,29 @@
 package org.mifosplatform.portfolio.savingsaccount.service;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+import org.bouncycastle.crypto.RuntimeCryptoException;
+import org.joda.time.LocalDate;
 import org.mifosplatform.infrastructure.core.data.EntityIdentifier;
 import org.mifosplatform.infrastructure.core.exception.PlatformDataIntegrityException;
 import org.mifosplatform.infrastructure.security.service.PlatformSecurityContext;
+import org.mifosplatform.portfolio.client.domain.Note;
 import org.mifosplatform.portfolio.client.domain.NoteRepository;
+import org.mifosplatform.portfolio.loanaccount.command.UndoStateTransitionCommand;
+import org.mifosplatform.portfolio.savingsaccount.command.SavingAccountApprovalCommand;
+import org.mifosplatform.portfolio.savingsaccount.command.SavingAccountApprovalCommandValidator;
 import org.mifosplatform.portfolio.savingsaccount.command.SavingAccountCommand;
 import org.mifosplatform.portfolio.savingsaccount.command.SavingAccountCommandValidator;
+import org.mifosplatform.portfolio.savingsaccount.command.SavingAccountStateTransitionCommandValidator;
+import org.mifosplatform.portfolio.savingsaccount.command.SavingStateTransitionsCommand;
 import org.mifosplatform.portfolio.savingsaccount.domain.SavingAccount;
 import org.mifosplatform.portfolio.savingsaccount.domain.SavingAccountRepository;
 import org.mifosplatform.portfolio.savingsaccount.exception.SavingAccountNotFoundException;
+import org.mifosplatform.portfolio.savingsdepositaccount.domain.DepositAccountStatus;
+import org.mifosplatform.portfolio.savingsdepositaccount.domain.DepositLifecycleStateMachine;
+import org.mifosplatform.portfolio.savingsdepositaccount.domain.DepositLifecycleStateMachineImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +39,6 @@ public class SavingAccountWritePlatformServiceJpaRepositoryImpl implements Savin
     private final PlatformSecurityContext context;
     private final SavingAccountRepository savingAccountRepository;
     private final SavingAccountAssembler savingAccountAssembler;
-    @SuppressWarnings("unused")
     private final NoteRepository noteRepository;
 
     @Autowired
@@ -91,4 +105,105 @@ public class SavingAccountWritePlatformServiceJpaRepositoryImpl implements Savin
         throw new PlatformDataIntegrityException("error.msg.saving.account.unknown.data.integrity.issue",
                 "Unknown data integrity issue with resource.");
     }
+
+	@Override
+	public EntityIdentifier rejectSavingApplication(SavingStateTransitionsCommand command) {
+		
+		this.context.authenticatedUser();
+		
+		SavingAccountStateTransitionCommandValidator validator = new SavingAccountStateTransitionCommandValidator(command);
+		validator.validate();
+		
+		SavingAccount account = this.savingAccountRepository.findOne(command.getAccountId());
+		if (account == null || account.isDeleted()) {
+			throw new SavingAccountNotFoundException(command.getAccountId());
+		}
+		LocalDate eventDate = command.getEventDate();
+		account.reject(eventDate, defaultDepositLifecycleStateMachine());
+		this.savingAccountRepository.save(account);
+		
+		String noteText = command.getNote();
+        if (StringUtils.isNotBlank(noteText)) {
+            Note note = Note.savingNote(account, noteText);
+            this.noteRepository.save(note);
+        }
+		
+		return new EntityIdentifier(account.getId());
+	}
+	
+	private DepositLifecycleStateMachine defaultDepositLifecycleStateMachine() {
+        List<DepositAccountStatus> allowedDepositStatuses = Arrays.asList(DepositAccountStatus.values());
+        return new DepositLifecycleStateMachineImpl(allowedDepositStatuses);
+    }
+
+	@Override
+	public EntityIdentifier withdrawSavingApplication(SavingStateTransitionsCommand command) {
+		this.context.authenticatedUser();
+		
+		SavingAccountStateTransitionCommandValidator validator = new SavingAccountStateTransitionCommandValidator(command);
+		validator.validate();
+		
+		SavingAccount account = this.savingAccountRepository.findOne(command.getAccountId());
+		if (account == null || account.isDeleted()) {
+			throw new SavingAccountNotFoundException(command.getAccountId());
+		}
+		LocalDate eventDate = command.getEventDate();
+		account.withdrawnByApplicant(eventDate, defaultDepositLifecycleStateMachine());
+		this.savingAccountRepository.save(account);
+		
+		String noteText = command.getNote();
+        if (StringUtils.isNotBlank(noteText)) {
+            Note note = Note.savingNote(account, noteText);
+            this.noteRepository.save(note);
+        }
+		
+		return new EntityIdentifier(account.getId());
+	}
+
+	@Override
+	public EntityIdentifier undoSavingAccountApproval(UndoStateTransitionCommand command) {
+		
+		this.context.authenticatedUser();
+		SavingAccount account = this.savingAccountRepository.findOne(command.getLoanId());
+		if (account == null || account.isDeleted()) {
+			throw new SavingAccountNotFoundException(command.getLoanId());
+		}
+		account.undoSavingAccountApproval(defaultDepositLifecycleStateMachine());
+		this.savingAccountRepository.save(account);
+		
+		String noteText = command.getNote();
+        if (StringUtils.isNotBlank(noteText)) {
+            Note note = Note.savingNote(account, noteText);
+            this.noteRepository.save(note);
+        }
+		
+		return new EntityIdentifier(account.getId());
+	}
+
+	@Override
+	public EntityIdentifier approveSavingAccount(SavingAccountApprovalCommand command) {
+		
+		this.context.authenticatedUser();
+		SavingAccountApprovalCommandValidator validator = new SavingAccountApprovalCommandValidator(command);
+		validator.validate();
+		SavingAccount account = this.savingAccountRepository.findOne(command.getAccountId());
+		if (account == null || account.isDeleted()) {
+			throw new SavingAccountNotFoundException(command.getAccountId());
+		}
+		LocalDate approvalDate = command.getApprovalDate();
+		if (approvalDate.isBefore(account.projectedCommencementDate())) {
+			throw new RuntimeCryptoException("Date of approval cannot before application submission date");
+		}
+		this.savingAccountAssembler.approveSavingAccount(command,account);
+		this.savingAccountRepository.save(account);
+		
+		String noteText = command.getNote();
+        if (StringUtils.isNotBlank(noteText)) {
+            Note note = Note.savingNote(account, noteText);
+            this.noteRepository.save(note);
+        }
+		
+		return new EntityIdentifier(account.getId());
+	}
+
 }

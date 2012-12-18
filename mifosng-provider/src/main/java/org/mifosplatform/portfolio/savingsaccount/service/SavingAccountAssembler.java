@@ -11,6 +11,7 @@ import org.mifosplatform.portfolio.client.domain.Client;
 import org.mifosplatform.portfolio.client.domain.ClientRepository;
 import org.mifosplatform.portfolio.client.exception.ClientNotFoundException;
 import org.mifosplatform.portfolio.loanproduct.domain.PeriodFrequencyType;
+import org.mifosplatform.portfolio.savingsaccount.command.SavingAccountApprovalCommand;
 import org.mifosplatform.portfolio.savingsaccount.command.SavingAccountCommand;
 import org.mifosplatform.portfolio.savingsaccount.data.SavingScheduleData;
 import org.mifosplatform.portfolio.savingsaccount.data.SavingSchedulePeriodData;
@@ -222,5 +223,29 @@ public class SavingAccountAssembler {
         List<DepositAccountStatus> allowedDepositStatuses = Arrays.asList(DepositAccountStatus.values());
         return new DepositLifecycleStateMachineImpl(allowedDepositStatuses);
     }
+
+	public void approveSavingAccount(SavingAccountApprovalCommand command, SavingAccount account) {
+		/*"minimumBalanceForWithdrawal", "interestType", "tenure", "tenureType", "frequency", "payEvery", "note"*/
+		
+		LocalDate approvalDate = account.projectedCommencementDate();
+		if (command.getApprovalDate() != null) {
+			approvalDate = command.getApprovalDate();
+		}
+		
+		BigDecimal savingsDepositAmountPerPeriod=account.getSavingsDepositAmountPerPeriod();
+		if (command.getDepositAmountPerPeriod() != null) {
+			savingsDepositAmountPerPeriod = command.getDepositAmountPerPeriod();
+		}
+		
+		BigDecimal recurringInterestRate = account.getReccuringInterestRate();
+		if (command.getRecurringInterestRate() != null) {
+			recurringInterestRate = command.getRecurringInterestRate();
+		}
+		
+		BigDecimal savingInterestRate = account.getSavingInterestRate();
+		if (command.getSavingInterestRate() != null) {
+			savingInterestRate = command.getSavingInterestRate(); 
+		}
+	}
 
 }

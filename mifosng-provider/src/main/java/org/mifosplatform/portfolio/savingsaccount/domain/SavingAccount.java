@@ -33,6 +33,7 @@ import org.mifosplatform.portfolio.savingsaccountproduct.domain.SavingsInterestT
 import org.mifosplatform.portfolio.savingsdepositaccount.domain.DepositAccountEvent;
 import org.mifosplatform.portfolio.savingsdepositaccount.domain.DepositAccountStatus;
 import org.mifosplatform.portfolio.savingsdepositaccount.domain.DepositLifecycleStateMachine;
+import org.mifosplatform.portfolio.savingsdepositaccount.exception.InvalidDepositStateTransitionException;
 import org.mifosplatform.portfolio.savingsdepositproduct.domain.TenureTypeEnum;
 import org.mifosplatform.useradministration.domain.AppUser;
 
@@ -159,6 +160,10 @@ public class SavingAccount extends AbstractAuditableCustom<AppUser, Long> {
     @LazyCollection(LazyCollectionOption.FALSE)
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "savingAccount", orphanRemoval = true)
     private final List<SavingScheduleInstallments> savingScheduleInstallments = new ArrayList<SavingScheduleInstallments>();
+    
+    public SavingAccount() {
+		// TODO Auto-generated constructor stub
+	}
 
     public static SavingAccount openNew(Client client, SavingProduct product, String externalId, Money savingsDeposit,
             BigDecimal reccuringInterestRate, BigDecimal savingInterestRate, Integer tenure, LocalDate commencementDate,
@@ -353,5 +358,76 @@ public class SavingAccount extends AbstractAuditableCustom<AppUser, Long> {
         installment.updateAccount(this);
         this.savingScheduleInstallments.add(installment);
     }
+
+	public void reject(LocalDate rejectedOn, DepositLifecycleStateMachine depositLifecycleStateMachine) {
+
+
+        DepositAccountStatus statusEnum = depositLifecycleStateMachine.transition(DepositAccountEvent.DEPOSIT_REJECTED,
+                DepositAccountStatus.fromInt(this.accountStatus));
+        this.accountStatus = statusEnum.getValue();
+
+        this.maturesOnDate = null;
+        this.rejectedOnDate = rejectedOn.toDateTimeAtCurrentTime().toDate();
+        this.closedOnDate = rejectedOn.toDateTimeAtCurrentTime().toDate();
+
+        if (rejectedOn.isBefore(projectedCommencementDate())) {
+
+            final String errorMessage = "The date on which a saving account is rejected cannot be before its submittal date: "
+                    + projectedCommencementDate().toString();
+            throw new InvalidDepositStateTransitionException("reject", "cannot.be.before.submittal.date", errorMessage, rejectedOn,
+            		projectedCommencementDate());
+
+        }
+        if (rejectedOn.isAfter(new LocalDate())) {
+
+            final String errorMessage = "The date on which a saving account is rejected cannot be in the future.";
+            throw new InvalidDepositStateTransitionException("reject", "cannot.be.a.future.date", errorMessage, rejectedOn);
+
+        }
+
+    
+	}
+	
+	public LocalDate projectedCommencementDate() {
+        LocalDate date = null;
+        if (this.projectedCommencementDate != null) {
+            date = new LocalDate(this.projectedCommencementDate);
+        }
+        return date;
+    }
+
+	public void withdrawnByApplicant(LocalDate withdrawnOn, DepositLifecycleStateMachine depositLifecycleStateMachine) {
+		
+		DepositAccountStatus statusEnum = depositLifecycleStateMachine.transition(DepositAccountEvent.DEPOSIT_WITHDRAWN,
+                DepositAccountStatus.fromInt(this.accountStatus));
+        this.accountStatus = statusEnum.getValue();
+
+        this.maturesOnDate = null;
+        this.withdrawnOnDate = withdrawnOn.toDateTimeAtCurrentTime().toDate();
+        this.closedOnDate = withdrawnOn.toDateTimeAtCurrentTime().toDate();
+
+        if (withdrawnOn.isBefore(projectedCommencementDate())) {
+
+            final String errorMessage = "The date on which a deposit is rejected cannot be before its submittal date: "
+                    + projectedCommencementDate().toString();
+            throw new InvalidDepositStateTransitionException("withdrawnbyclient", "cannot.be.before.submittal.date", errorMessage, withdrawnOn,
+            		projectedCommencementDate());
+
+        }
+
+        if (withdrawnOn.isAfter(new LocalDate())) {
+            final String errorMessage = "The date on which a deposit is rejected cannot be in the future.";
+            throw new InvalidDepositStateTransitionException("withdrawnbyclient", "cannot.be.a.future.date", errorMessage, withdrawnOn);
+        }
+	}
+
+	public void undoSavingAccountApproval(DepositLifecycleStateMachine depositLifecycleStateMachine) {
+		DepositAccountStatus statusEnum = depositLifecycleStateMachine.transition(DepositAccountEvent.DEPOSIT_APPROVAL_UNDO,
+                DepositAccountStatus.fromInt(this.accountStatus));
+        this.accountStatus = statusEnum.getValue();
+        this.savingScheduleInstallments.clear();
+        this.closedOnDate = new Date();
+	}
+	
 
 }
