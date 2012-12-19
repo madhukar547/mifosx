@@ -48,10 +48,8 @@ public class SavingAccount extends AbstractAuditableCustom<AppUser, Long> {
     @JoinColumn(name = "product_id")
     private SavingProduct product;
 
-    // FIXME - MADHUKAR - Do not use the actual enum type here but instead use
-    // Integer e.g. private Integer savingProductType;
     @Column(name = "savings_product_type", nullable = false)
-    private SavingProductType savingProductType;
+    private Integer savingProductType;
 
     @Column(name = "external_id")
     private String externalId;
@@ -76,24 +74,17 @@ public class SavingAccount extends AbstractAuditableCustom<AppUser, Long> {
     @Column(name = "tenure", nullable = false)
     private Integer tenure;
 
-    // FIXME - MADHUKAR - Do not use the actual enum type here use integer representation
     @Column(name = "tenure_type", nullable = false)
-    private TenureTypeEnum tenureType;
+    private Integer tenureType;
 
-    // FIXME - MADHUKAR - Do not use the actual enum type here but instead use
-    // Integer e.g. private Integer savingProductType;
     @Column(name = "frequency", nullable = false)
-    private SavingFrequencyType frequency;
+    private Integer frequency;
 
-    // FIXME - MADHUKAR - Do not use the actual enum type here but instead use
-    // Integer e.g. private Integer savingProductType;
     @Column(name = "interest_type", nullable = false)
-    private SavingsInterestType interestType;
+    private Integer interestType;
 
-    // FIXME - MADHUKAR - Do not use the actual enum type here but instead use
-    // Integer e.g. private Integer savingProductType;
     @Column(name = "interest_calculation_method")
-    private SavingInterestCalculationMethod interestCalculationMethod;
+    private Integer interestCalculationMethod;
 
     @Temporal(TemporalType.DATE)
     @Column(name = "projected_commencement_date")
@@ -158,7 +149,7 @@ public class SavingAccount extends AbstractAuditableCustom<AppUser, Long> {
     private Integer lockinPeriod;
 
     @Column(name = "lock_in_period_type", nullable = false)
-    private PeriodFrequencyType lockinPeriodType;
+    private Integer lockinPeriodType;
     
     @Column(name = "deposit_every", nullable = false)
     private Integer payEvery;
@@ -219,14 +210,14 @@ public class SavingAccount extends AbstractAuditableCustom<AppUser, Long> {
         this.savingInterestRate = savingInterestRate;
         this.tenure = tenure;
         this.projectedCommencementDate = commencementDate.toDate();
-        this.tenureType = tenureTypeEnum;
-        this.savingProductType = savingProductType;
-        this.frequency = savingFrequencyType;
-        this.interestType = interestType;
-        this.interestCalculationMethod = savingInterestCalculationMethod;
+        this.tenureType = tenureTypeEnum.getValue();
+        this.savingProductType = savingProductType.getValue();
+        this.frequency = savingFrequencyType.getValue();
+        this.interestType = interestType.getValue();
+        this.interestCalculationMethod = savingInterestCalculationMethod.getValue();
         this.isLockinPeriodAllowed = isLockinPeriodAllowed;
         this.lockinPeriod = lockinPeriod;
-        this.lockinPeriodType = lockinPeriodType;
+        this.lockinPeriodType = lockinPeriodType.getValue();
         this.projectedTotalOnMaturity = futureValueOnMaturity.getAmount();
         this.projectedInterestAccruedOnMaturity = futureValueOnMaturity.getAmount().subtract(
                 BigDecimal.valueOf(savingsDeposit.getAmount().doubleValue() * tenure.doubleValue()));
@@ -255,13 +246,13 @@ public class SavingAccount extends AbstractAuditableCustom<AppUser, Long> {
         this.savingInterestRate = savingInterestRate;
         this.tenure = tenure;
         this.projectedCommencementDate = commencementDate.toDate();
-        this.tenureType = tenureTypeEnum;
-        this.savingProductType = savingProductType;
-        this.frequency = savingFrequencyType;
-        this.interestCalculationMethod = savingInterestCalculationMethod;
+        this.tenureType = tenureTypeEnum.getValue();
+        this.savingProductType = savingProductType.getValue();
+        this.frequency = savingFrequencyType.getValue();
+        this.interestCalculationMethod = savingInterestCalculationMethod.getValue();
         this.isLockinPeriodAllowed = isLockinPeriodAllowed;
         this.lockinPeriod = lockinPeriod;
-        this.lockinPeriodType = lockinPeriodType;
+        this.lockinPeriodType = lockinPeriodType.getValue();
         this.payEvery = payEvery;
 
         // FIXME - MADHUKAR - futureValueOnMaturity is possibly null
@@ -286,7 +277,7 @@ public class SavingAccount extends AbstractAuditableCustom<AppUser, Long> {
         return product;
     }
 
-    public SavingProductType getSavingProductType() {
+    public Integer getSavingProductType() {
         return savingProductType;
     }
 
@@ -310,19 +301,19 @@ public class SavingAccount extends AbstractAuditableCustom<AppUser, Long> {
         return tenure;
     }
 
-    public TenureTypeEnum getTenureType() {
+    public Integer getTenureType() {
         return tenureType;
     }
 
-    public SavingFrequencyType getFrequency() {
+    public Integer getFrequency() {
         return frequency;
     }
 
-    public SavingsInterestType getInterestType() {
+    public Integer getInterestType() {
         return interestType;
     }
 
-    public SavingInterestCalculationMethod getInterestCalculationMethod() {
+    public Integer getInterestCalculationMethod() {
         return interestCalculationMethod;
     }
 
@@ -350,7 +341,7 @@ public class SavingAccount extends AbstractAuditableCustom<AppUser, Long> {
         return lockinPeriod;
     }
 
-    public PeriodFrequencyType getLockinPeriodType() {
+    public Integer getLockinPeriodType() {
         return lockinPeriodType;
     }
 

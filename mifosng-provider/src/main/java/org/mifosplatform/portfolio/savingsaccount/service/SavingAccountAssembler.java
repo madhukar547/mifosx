@@ -70,28 +70,28 @@ public class SavingAccountAssembler {
             tenure = command.getTenure();
         }
 
-        TenureTypeEnum tenureTypeEnum = product.getSavingProductRelatedDetail().getTenureType();
+        TenureTypeEnum tenureTypeEnum = TenureTypeEnum.fromInt(product.getSavingProductRelatedDetail().getTenureType());
         if (command.getTenureType() != null) {
             tenureTypeEnum = TenureTypeEnum.fromInt(command.getTenureType());
         }
 
-        SavingProductType savingProductType = product.getSavingProductRelatedDetail().getSavingProductType();
+        SavingProductType savingProductType = SavingProductType.fromInt(product.getSavingProductRelatedDetail().getSavingProductType());
         if (command.getSavingProductType() != null) {
             savingProductType = SavingProductType.fromInt(command.getSavingProductType());
         }
 
-        SavingFrequencyType savingFrequencyType = product.getSavingProductRelatedDetail().getFrequency();
+        SavingFrequencyType savingFrequencyType = SavingFrequencyType.fromInt(product.getSavingProductRelatedDetail().getFrequency());
         if (command.getFrequency() != null) {
             savingFrequencyType = SavingFrequencyType.fromInt(command.getFrequency());
         }
 
-        SavingInterestCalculationMethod savingInterestCalculationMethod = product.getSavingProductRelatedDetail()
-                .getInterestCalculationMethod();
+        SavingInterestCalculationMethod savingInterestCalculationMethod = SavingInterestCalculationMethod.fromInt(product.getSavingProductRelatedDetail()
+                .getInterestCalculationMethod());
         if (command.getInterestCalculationMethod() != null) {
             savingInterestCalculationMethod = SavingInterestCalculationMethod.fromInt(command.getInterestCalculationMethod());
         }
 
-        SavingsInterestType interestType = product.getSavingProductRelatedDetail().getInterestType();
+        SavingsInterestType interestType = SavingsInterestType.fromInt(product.getSavingProductRelatedDetail().getInterestType());
         if (command.getInterestType() != null) {
             interestType = SavingsInterestType.fromInt(command.getInterestType());
         }
@@ -110,7 +110,7 @@ public class SavingAccountAssembler {
             lockinPeriod = command.getLockinPeriod();
         }
 
-        PeriodFrequencyType lockinPeriodType = product.getSavingProductRelatedDetail().getLockinPeriodType();
+        PeriodFrequencyType lockinPeriodType = PeriodFrequencyType.fromInt(product.getSavingProductRelatedDetail().getLockinPeriodType());
         if (command.getLockinPeriodType() != null) {
             lockinPeriodType = PeriodFrequencyType.fromInt(command.getLockinPeriodType());
         }
@@ -163,22 +163,22 @@ public class SavingAccountAssembler {
             commencementDate = command.getCommencementDate();
         }
 
-        TenureTypeEnum tenureTypeEnum = account.getTenureType();
+        TenureTypeEnum tenureTypeEnum = TenureTypeEnum.fromInt(account.getTenureType());
         if (command.isTenureTypeEnumChanged()) {
             tenureTypeEnum = TenureTypeEnum.fromInt(command.getTenureType());
         }
 
-        SavingProductType savingProductType = account.getSavingProductType();
+        SavingProductType savingProductType = SavingProductType.fromInt(account.getSavingProductType());
         if (command.isSavingProductTypeChanged()) {
             savingProductType = SavingProductType.fromInt(command.getSavingProductType());
         }
 
-        SavingFrequencyType savingFrequencyType = account.getFrequency();
+        SavingFrequencyType savingFrequencyType = SavingFrequencyType.fromInt(account.getFrequency());
         if (command.isSavingFrequencyTypeChanged()) {
             savingFrequencyType = SavingFrequencyType.fromInt(command.getFrequency());
         }
 
-        SavingInterestCalculationMethod savingInterestCalculationMethod = account.getInterestCalculationMethod();
+        SavingInterestCalculationMethod savingInterestCalculationMethod = SavingInterestCalculationMethod.fromInt(account.getInterestCalculationMethod());
         if (command.isSavingInterestCalculationMethodChanged()) {
             savingInterestCalculationMethod = SavingInterestCalculationMethod.fromInt(command.getInterestCalculationMethod());
         }
@@ -203,7 +203,7 @@ public class SavingAccountAssembler {
             lockinPeriod = command.getLockinPeriod();
         }
 
-        PeriodFrequencyType lockinPeriodType = account.getLockinPeriodType();
+        PeriodFrequencyType lockinPeriodType = PeriodFrequencyType.fromInt(account.getLockinPeriodType());
         if (command.isLockinPeriodTypeChanged()) {
             lockinPeriodType = PeriodFrequencyType.fromInt(command.getLockinPeriodType());
         }

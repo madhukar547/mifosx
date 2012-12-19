@@ -24,12 +24,10 @@ public class SavingAccountData {
     private final String productName;
     private final EnumOptionData productType;
     private final CurrencyData currencyData;
-    // FIXME - Madhukar - spelling mistake on word 'deposit' - directly affects api and how people use it.
-    private final BigDecimal savingsDepostiAmountPerPeriod;
+    private final BigDecimal savingsDepositAmountPerPeriod;
     private final EnumOptionData savingsFrequencyType;
     private final BigDecimal totalDepositAmount;
-    // FIXME - Madhukar - spelling mistake on work 'recurring' - directly affects api and how people use it.
-    private final BigDecimal reccuringInterestRate;
+    private final BigDecimal recurringInterestRate;
     private final BigDecimal savingInterestRate;
     private final EnumOptionData interestType;
     private final EnumOptionData interestCalculationMethod;
@@ -74,8 +72,8 @@ public class SavingAccountData {
     }
 
     public SavingAccountData(Long id, EnumOptionData status, String externalId, Long clientId, String clientName, Long productId,
-            String productName, EnumOptionData productType, CurrencyData currencyData, BigDecimal savingsDepostiAmountPerPeriod,
-            EnumOptionData savingsFrequencyType, BigDecimal totalDepositAmount, BigDecimal reccuringInterestRate,
+            String productName, EnumOptionData productType, CurrencyData currencyData, BigDecimal savingsDepositAmountPerPeriod,
+            EnumOptionData savingsFrequencyType, BigDecimal totalDepositAmount, BigDecimal recurringInterestRate,
             BigDecimal savingInterestRate, EnumOptionData interestType, EnumOptionData interestCalculationMethod, Integer tenure,
             EnumOptionData tenureType, LocalDate projectedCommencementDate, LocalDate actualCommencementDate, LocalDate maturesOnDate,
             BigDecimal projectedInterestAccuredOnMaturity, BigDecimal actualInterestAccured, BigDecimal projectedMaturityAmount,
@@ -91,10 +89,10 @@ public class SavingAccountData {
         this.productName = productName;
         this.productType = productType;
         this.currencyData = currencyData;
-        this.savingsDepostiAmountPerPeriod = savingsDepostiAmountPerPeriod;
+        this.savingsDepositAmountPerPeriod = savingsDepositAmountPerPeriod;
         this.savingsFrequencyType = savingsFrequencyType;
         this.totalDepositAmount = totalDepositAmount;
-        this.reccuringInterestRate = reccuringInterestRate;
+        this.recurringInterestRate = recurringInterestRate;
         this.savingInterestRate = savingInterestRate;
         this.interestType = interestType;
         this.interestCalculationMethod = interestCalculationMethod;
@@ -137,11 +135,10 @@ public class SavingAccountData {
         this.productName = null;
         this.productType = null;
         this.currencyData = new CurrencyData("USD", "US Dollar", 2, "$", "currency.USD");
-        ;
-        this.savingsDepostiAmountPerPeriod = null;
+        this.savingsDepositAmountPerPeriod = null;
         this.savingsFrequencyType = null;
         this.totalDepositAmount = null;
-        this.reccuringInterestRate = null;
+        this.recurringInterestRate = null;
         this.savingInterestRate = null;
         this.interestType = null;
         this.interestCalculationMethod = null;
@@ -186,10 +183,10 @@ public class SavingAccountData {
         this.productName = account.productName;
         this.productType = account.productType;
         this.currencyData = account.currencyData;
-        this.savingsDepostiAmountPerPeriod = account.savingsDepostiAmountPerPeriod;
+        this.savingsDepositAmountPerPeriod = account.savingsDepositAmountPerPeriod;
         this.savingsFrequencyType = account.savingsFrequencyType;
         this.totalDepositAmount = account.totalDepositAmount;
-        this.reccuringInterestRate = account.reccuringInterestRate;
+        this.recurringInterestRate = account.recurringInterestRate;
         this.savingInterestRate = account.savingInterestRate;
         this.interestType = account.interestType;
         this.interestCalculationMethod = account.interestCalculationMethod;
@@ -224,7 +221,7 @@ public class SavingAccountData {
 
     // FIXME - Madhukar - unused variables been passed into construction - why?
     public SavingAccountData(Long clientId, String clientName, Long productId, String productName, CurrencyData currency,
-            BigDecimal interestRate, BigDecimal savingsDepostiAmountPerPeriod, EnumOptionData productType, EnumOptionData tenureType,
+            BigDecimal interestRate, BigDecimal savingsDepositAmountPerPeriod, EnumOptionData productType, EnumOptionData tenureType,
             Integer tenure, EnumOptionData savingsFrequencyType, EnumOptionData interestType, EnumOptionData interestCalculationMethod,
             BigDecimal minimumBalanceForWithdrawal, boolean partialDepositAllowed, boolean lockinPeriodAllowed, Integer lockinPeriod,
             EnumOptionData lockinPeriodType, Integer depositEvery) {
@@ -238,10 +235,10 @@ public class SavingAccountData {
         this.productName = productName;
         this.productType = productType;
         this.currencyData = currency;
-        this.savingsDepostiAmountPerPeriod = savingsDepostiAmountPerPeriod;
+        this.savingsDepositAmountPerPeriod = savingsDepositAmountPerPeriod;
         this.savingsFrequencyType = savingsFrequencyType;
         this.totalDepositAmount = null;
-        this.reccuringInterestRate = interestRate;
+        this.recurringInterestRate = interestRate;
         this.savingInterestRate = interestRate;
         this.interestType = interestType;
         this.interestCalculationMethod = interestCalculationMethod;
